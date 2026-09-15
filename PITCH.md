@@ -4,12 +4,16 @@
 New developers don't fail because they lack skill — they fail because the first few weeks are spent silently misreading a codebase, with no one checking whether their assumptions are actually correct. That gap is expensive and mostly invisible until it causes a bug months later.
 
 **The numbers** (cite in presentation):
-- Average time-to-productivity for a new developer: 2–4 weeks, with juniors taking 4–6 months
-- Cost of onboarding a single developer: $20,000–$80,000 across the first 90 days (lost productivity alone)
-- 22% of developers leave within their first 90 days — poor onboarding is a real driver
-- Strong onboarding processes improve retention by 82% and productivity by 70%
+- New developers typically take **3–6 months** to reach full productivity (Cycloid; AllenComm)
+- Cost of onboarding a single developer: **$20,000–$80,000** across the first 90 days, scaling with seniority (industry breakdown, $15k–$25k junior up to $85k senior)
+- **28%** of new hires quit within their first 90 days, largely driven by poor onboarding (Robert Half / Enboarder survey, via HR Dive)
+- Strong onboarding processes improve retention by **82%** and productivity by **70%** (Brandon Hall Group / Glassdoor study)
 
-Sources: developeronboardingcost.com, growin.com, correctcontext.com onboarding research (2026)
+Sources (re-verified 2026-09-15):
+- [Cycloid — Developer Onboarding Process Guide](https://www.cycloid.io/blogs/developer-onboarding-process/)
+- [AllenComm — Time-to-Productivity](https://www.allencomm.com/2026/04/successful-onboarding-time-to-productivity-early-performance-signals/)
+- [HR Dive — Why 28% Quit in First 90 Days](https://www.hrdive.com/news/why-do-28-of-employees-quit-in-their-first-90-days-poor-onboarding-practi/441139/)
+- [Process Street — 82% Retention Onboarding Stat](https://www.process.st/onboarding-best-practices/)
 
 ## The insight
 Reading code passively doesn't build real understanding — testing your own assumptions and getting corrected does. That's well-established in how people actually learn (active recall beats passive review). But nobody applies that to codebase onboarding — it's still "read the docs, read the code, hope it sinks in."
@@ -29,6 +33,6 @@ Every company hiring developers pays this cost. We're not proposing a nice-to-ha
 ---
 
 ## Notes for later polish
-- [ ] Swap in exact final numbers/sources once video script is written (re-verify stats close to submission date, given how fast onboarding-cost articles get rehashed/copied)
+- [x] Stats re-verified against primary/credible sources 2026-09-15 (see above)
 - [ ] Decide whether pitch opens with the money stat or with "Mia" story from SCENARIO.md — likely stronger to open with Mia (human story) then back it with the stat
 - [ ] Fit within submission's "Short Description" and "Long Description" fields once submission form is available

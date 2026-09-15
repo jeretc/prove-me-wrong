@@ -6,7 +6,7 @@ Slide deck + video narration outline, built from PITCH.md and SCENARIO.md. Conte
 
 1. **Title** — "Prove Me Wrong" / one-line hook: "Onboarding as a conversation, powered by IBM Bob 2.0."
 2. **Mia's story** (from SCENARIO.md) — open with the human moment: new hire, silent misreading, no one checking her assumptions. One scenario snippet as a visual (the retry-logic guess-wrong-then-corrected beat).
-3. **The problem, in numbers** — time-to-productivity (2-4 wks, juniors 4-6 mo), cost ($20k-$80k/hire/90 days), 22% leave within 90 days. (Re-verify sources before final submission — flagged in PITCH.md.)
+3. **The problem, in numbers** — time-to-productivity (3-6 months to full productivity), cost ($20k-$80k/hire/90 days), 28% leave within 90 days. (Sources verified 2026-09-15, see PITCH.md.)
 4. **The insight** — active recall beats passive reading; nobody applies this to codebase onboarding today.
 5. **The solution** — how it works: real code → guess → Bob corrects with citation (line/test/commit) → adapts difficulty → session summary. Diagram: guess → correction → citation loop.
 6. **Why Bob 2.0 specifically** — full-repo context is the enabling capability; a single-file assistant can't do this (ties directly to "Application of Technology" judging criterion).
@@ -30,7 +30,7 @@ Slide deck + video narration outline, built from PITCH.md and SCENARIO.md. Conte
 - Demo beat (wrong guess → citation-backed correction) is the single most important shot in both deck and video — build/rehearse this first once Bob access opens.
 
 ## Still TODO before submission
-- [ ] Re-verify pitch stats/sources (flagged in PITCH.md)
+- [x] Re-verify pitch stats/sources (done 2026-09-15, see PITCH.md)
 - [ ] Record actual screen capture once Bob 2.0 access opens Sept 25
 - [ ] Build slides visually (content locked here, visuals TBD — consider reusing shadcn/GSAP components from `./app` for a demo-consistent look)
 - [ ] Fit slide 1-2 punch into submission's "Short Description" field once form is available
