@@ -74,7 +74,7 @@ Idea + solo + interface + demo repo + frontend stack + question mechanism all de
 2. **Interceptor execution order** — request vs. response interceptors don't run in the same relative order. Q angle: two request interceptors added A then B — which touches data first?
 3. **Redirect handling & credential stripping** (`beforeRedirect`, `maxRedirects`) — sensitive headers stripped on cross-origin redirects. Q angle: does an Authorization header survive a redirect to a different domain?
 4. **Cancellation: AbortController vs. deprecated CancelToken** (`lib/cancel/`) — two systems, subtly different behavior. Q angle: does `.then()` still run after cancel, or does it jump to `.catch()`?
-5. **XSRF token logic** — conditional same-origin/cross-origin auto-attach behavior. Q angle: does the XSRF token auto-attach on a cross-domain call?
+5. **XSRF token logic** (`lib/helpers/resolveConfig.js:92-101`, moved from earlier assumed location) — token only auto-attaches if `withXSRFToken === true`, or unset AND same-origin. Q angle: does the XSRF token auto-attach on a cross-domain call? (No, unless explicitly forced.)
 6. **maxContentLength / maxBodyLength** — decompression-bomb protection. Q angle: oversized response — silent truncate or throw?
 7. **transformRequest / transformResponse pipeline** — ordered data transforms, easy to accidentally double-transform. Q angle: does a custom transform replace or run alongside the default JSON handling?
 8. **Proxy tunneling (HTTP vs HTTPS)** — CONNECT tunnel behavior differs by protocol. Q angle: does proxying work identically for HTTP vs HTTPS targets?
@@ -84,7 +84,9 @@ Idea + solo + interface + demo repo + frontend stack + question mechanism all de
 - `SCENARIO.md` — plain-language "Mia's first day" walkthrough for non-technical sharing
 
 ## Next steps
-- [ ] Watch for challenge brief / tracks announcement (not yet published as of 2026-08-07)
-- [ ] Verify each hotspot's exact current behavior/line references once Bob access opens (confirm against live repo, not just docs)
+- [x] Challenge brief published (2026-09-15): confirmed idea is on-brief — "improve a developer workflow" (onboarding qualifies)
+- [x] Next.js + shadcn/ui + GSAP scaffold created and build-verified at `./app` (2026-09-15)
+- [x] Verified all 8 hotspots against live axios repo (2026-09-15) — all accurate; hotspot #5's file path corrected above
 - [ ] Re-verify pitch stats/sources closer to submission date
-- [ ] Nothing else actionable until challenge brief drops or Sept 25 kickoff
+- [ ] Plan the Bob-session-summary screenshot capture workflow ahead of kickoff
+- [ ] Draft pitch deck / slide / video outline content
