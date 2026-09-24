@@ -15,15 +15,15 @@ Slide deck + video narration outline, built from PITCH.md and SCENARIO.md. Conte
 9. **Originality** — contrast with round-1 saturated lanes (repo-visualizers, PR-risk-scorers); this is an adjacent framing on the same full-repo-context capability.
 10. **Close / ask** — "hours of proven understanding instead of weeks of silent reading." Thank-you + repo/demo links.
 
-## Video narration outline (target: 3-4 min)
+## Video narration outline (HARD CAP: 3:00 max, confirmed 2026-09-25 in the official Hackathon Guide — judges will not watch past 3:00; at least 90s must be live demo)
 
-- **0:00-0:30** — Mia's story, told as a voiceover over the scenario snippet (hook first, not stats first — per PITCH.md open question, now decided: story wins).
-- **0:30-1:00** — the stat punch: cost/time/retention numbers, fast cut.
-- **1:00-1:30** — the insight + solution explained simply (guess → correction → citation → adapt).
-- **1:30-2:30** — live demo screen capture: real Axios session, one wrong-guess-corrected moment shown in full (this is the emotional core of the video — don't rush it).
-- **2:30-3:00** — why Bob 2.0 specifically, tied to full-repo-context capability shown on screen (citations pointing at real files/commits).
-- **3:00-3:30** — business value + originality framing, brief.
-- **3:30-end** — close on the ask, repo link, thank you.
+See VIDEO_SCRIPT.md for the full word-for-word script at this exact timing:
+- **0:00-0:20** — Mia's story, fast hook.
+- **0:20-0:35** — the stakes, one line of stats.
+- **0:35-0:55** — insight + solution explained simply.
+- **0:55-2:35** — live demo (100s, satisfies the 90s-minimum requirement) — includes "why Bob 2.0" folded into the closing line, no separate slide for it.
+- **2:35-2:50** — business value + originality, one line each.
+- **2:50-3:00** — close.
 
 ## Open decisions resolved here
 - Opens with Mia's story, not the stat block (per PITCH.md's flagged open question).
@@ -31,6 +31,8 @@ Slide deck + video narration outline, built from PITCH.md and SCENARIO.md. Conte
 
 ## Still TODO before submission
 - [x] Re-verify pitch stats/sources (done 2026-09-15, see PITCH.md)
+- [x] Trim video script to the confirmed 3:00 hard cap (done 2026-09-25, see VIDEO_SCRIPT.md)
 - [ ] Record actual screen capture once Bob 2.0 access opens Sept 25
 - [ ] Build slides visually (content locked here, visuals TBD — consider reusing shadcn/GSAP components from `./app` for a demo-consistent look)
 - [ ] Fit slide 1-2 punch into submission's "Short Description" field once form is available
+- [ ] Draft the new required **IBM Bob Usage Statement** (≤500 words, separate from the Problem & Solution Statement) — confirmed 2026-09-25 as a hard submission requirement

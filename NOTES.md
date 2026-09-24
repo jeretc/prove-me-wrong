@@ -80,13 +80,28 @@ Idea + solo + interface + demo repo + frontend stack + question mechanism all de
 8. **Proxy tunneling (HTTP vs HTTPS)** — CONNECT tunnel behavior differs by protocol. Q angle: does proxying work identically for HTTP vs HTTPS targets?
 
 ## Related files
-- `PITCH.md` — pitch narrative / business-value case (drafted 2026-08-07)
+- `PITCH.md` — pitch narrative / business-value case (drafted 2026-08-07, stats re-verified 2026-09-15)
 - `SCENARIO.md` — plain-language "Mia's first day" walkthrough for non-technical sharing
+- `PRESENTATION.md` — slide deck + video narration outline
+- `VIDEO_SCRIPT.md` — word-for-word narration script, budgeted to the confirmed 3:00 video cap
+- `VIDEO_WALKTHROUGH.md` — step-by-step video production process
+- `BOB_CAPTURE_PLAN.md` — official `bob_sessions` folder evidence procedure + Bobcoin budget notes
 
 ## Next steps
 - [x] Challenge brief published (2026-09-15): confirmed idea is on-brief — "improve a developer workflow" (onboarding qualifies)
 - [x] Next.js + shadcn/ui + GSAP scaffold created and build-verified at `./app` (2026-09-15)
 - [x] Verified all 8 hotspots against live axios repo (2026-09-15) — all accurate; hotspot #5's file path corrected above
-- [ ] Re-verify pitch stats/sources closer to submission date
-- [ ] Plan the Bob-session-summary screenshot capture workflow ahead of kickoff
-- [ ] Draft pitch deck / slide / video outline content
+- [x] Re-verified pitch stats/sources (2026-09-15, see PITCH.md)
+- [x] Drafted pitch deck / slide / video outline content (2026-09-15)
+- [x] Official Hackathon Guide read (2026-09-25) — capture plan and video script updated to match real requirements (`bob_sessions` folder procedure, 3:00 video cap w/ 90s min demo, 40 Bobcoin budget, new IBM Bob Usage Statement deliverable)
+
+## Before kickoff (Sept 25, 11:00 PM Malaysia Time) — user action needed
+- [ ] Create an **IBMid** (required to log into Bob IDE) if not already done
+- [ ] Watch registered hackathon email (and spam folder) for the "added as team member to ibm-hackathon-xxxx" invite — arrives at kickoff
+- [ ] Install **Bob IDE** (v2.0.2+ — v1.0.3/v2.0.0 stop working Sept 30) ahead of time if possible, so setup doesn't eat into build time
+- [ ] At first login, confirm the active instance is the hackathon-provisioned **`ibm-coding-challenge-uat`** (region us-east), not a personal Bob account
+- [ ] Create a `bob_sessions/` folder in the project repo early (first hour of building)
+
+## Still open (not urgent, no rush before kickoff)
+- [ ] Draft the new required **IBM Bob Usage Statement** (≤500 words) — best written once real Bob usage exists to describe, so likely a Day 2/3 task
+- [ ] Build slides visually, record non-demo narration clips (VIDEO_WALKTHROUGH.md Steps 1-3) — optional head start, not blocking
