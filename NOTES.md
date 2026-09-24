@@ -96,10 +96,10 @@ Idea + solo + interface + demo repo + frontend stack + question mechanism all de
 - [x] Official Hackathon Guide read (2026-09-25) — capture plan and video script updated to match real requirements (`bob_sessions` folder procedure, 3:00 video cap w/ 90s min demo, 40 Bobcoin budget, new IBM Bob Usage Statement deliverable)
 
 ## Before kickoff (Sept 25, 11:00 PM Malaysia Time) — user action needed
-- [ ] Create an **IBMid** (required to log into Bob IDE) if not already done
+- [x] Create an **IBMid** — done 2026-09-25
+- [x] Install **Bob IDE** and log in — done 2026-09-25, confirmed working, currently on personal `bob-001` trial workspace (expected/normal until kickoff)
 - [ ] Watch registered hackathon email (and spam folder) for the "added as team member to ibm-hackathon-xxxx" invite — arrives at kickoff
-- [ ] Install **Bob IDE** (v2.0.2+ — v1.0.3/v2.0.0 stop working Sept 30) ahead of time if possible, so setup doesn't eat into build time
-- [ ] At first login, confirm the active instance is the hackathon-provisioned **`ibm-coding-challenge-uat`** (region us-east), not a personal Bob account
+- [ ] At kickoff, switch Bob IDE's workspace dropdown (Settings → General) from `bob-001` to the hackathon-provisioned **`ibm-coding-challenge-uat`** (region us-east) — same login, just a workspace switch, no new account
 - [ ] Create a `bob_sessions/` folder in the project repo early (first hour of building)
 
 ## Still open (not urgent, no rush before kickoff)
