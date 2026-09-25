@@ -5,6 +5,7 @@
 *.pem
 secrets/
 node_modules/
+axios-ref/
 
 # IBM Bob / IBM Cloud credential safety (per hackathon guide: exposed
 # IBM Cloud credentials can get the account suspended)
