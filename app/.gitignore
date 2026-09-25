@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IBM Bob / IBM Cloud credential safety
+.bob/
+.ibm/
+*.ibmcloud
+ibm-credentials.env
+*credentials*.json
+*.token
