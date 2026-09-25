@@ -1,29 +1,45 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { hotspots } from "@/data/hotspots";
 
 export default function Home() {
   return (
-    <div className="flex flex-1 items-center justify-center bg-zinc-50 dark:bg-black">
-      <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-6 py-24">
-        <Badge variant="secondary" className="w-fit">
+    <div className="flex flex-1 items-center justify-center px-6">
+      <main className="mx-auto flex w-full max-w-xl flex-col gap-8 py-24">
+        <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          <span className="text-primary">●</span>
           IBM Bob 2.0 Hackathon
-        </Badge>
-        <h1 className="text-4xl font-semibold tracking-tight text-balance">
-          Prove Me Wrong
-        </h1>
-        <p className="text-lg leading-relaxed text-muted-foreground">
-          Onboarding as a conversation. Guess what real code does, and let IBM Bob 2.0 prove
-          you right or wrong — with the exact file and line, not an opinion. This session
-          quizzes you on {hotspots.length} real, tricky spots in{" "}
-          <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-            axios/axios
-          </code>
-          .
-        </p>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <h1 className="text-5xl font-semibold tracking-tight text-balance">
+            Prove Me Wrong
+          </h1>
+          <p className="max-w-md text-lg leading-relaxed text-muted-foreground">
+            Guess what real code does. When you&apos;re wrong, Bob shows you why,
+            with the exact file and line, not an opinion.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-2 rounded-md border border-border bg-card p-4 font-mono text-sm">
+          <div className="flex items-center justify-between text-muted-foreground">
+            <span>target</span>
+            <span className="text-foreground">axios/axios</span>
+          </div>
+          <div className="flex items-center justify-between text-muted-foreground">
+            <span>topics</span>
+            <span className="text-foreground">{hotspots.length}</span>
+          </div>
+          <div className="flex items-center justify-between text-muted-foreground">
+            <span>engine</span>
+            <span className="text-foreground">IBM Bob 2.0</span>
+          </div>
+        </div>
+
         <Link href="/quiz" className="w-fit">
-          <Button size="lg">Start session</Button>
+          <Button size="lg" className="font-mono">
+            Start session →
+          </Button>
         </Link>
       </main>
     </div>

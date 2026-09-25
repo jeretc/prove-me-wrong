@@ -53,10 +53,12 @@ export default function QuizPage() {
   if (phase === "summary") {
     const correctCount = results.filter((r) => r.correct).length;
     return (
-      <div className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center gap-6 px-6 py-16">
+      <div className="mx-auto flex min-h-screen max-w-xl flex-col justify-center gap-6 px-6 py-16">
         <div className="text-center">
-          <p className="text-sm font-medium text-muted-foreground">Session complete</p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            Session complete
+          </p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight">
             {correctCount} of {hotspots.length} proven right
           </h1>
         </div>
@@ -65,19 +67,27 @@ export default function QuizPage() {
             {results.map((r) => (
               <div key={r.topic} className="flex items-center justify-between gap-4">
                 <span className="text-sm">{r.topic}</span>
-                <Badge variant={r.correct ? "default" : "destructive"}>
-                  {r.correct ? "Understood" : "Revisit this"}
+                <Badge
+                  className="font-mono text-xs"
+                  style={
+                    r.correct
+                      ? { backgroundColor: "var(--proof)", color: "var(--primary-foreground)" }
+                      : { backgroundColor: "var(--flag)", color: "var(--primary-foreground)" }
+                  }
+                >
+                  {r.correct ? "understood" : "revisit"}
                 </Badge>
               </div>
             ))}
           </CardContent>
         </Card>
         <p className="text-center text-sm text-muted-foreground">
-          Revisit the flagged topics above — each correction earlier pointed to the exact file
-          and line in the real axios source.
+          Revisit the flagged topics above, each correction pointed to the exact file and
+          line in the real axios source.
         </p>
         <Button
           variant="outline"
+          className="font-mono"
           onClick={() => {
             setIndex(0);
             setGuess("");
@@ -92,20 +102,20 @@ export default function QuizPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center gap-6 px-6 py-16">
+    <div className="mx-auto flex min-h-screen max-w-xl flex-col justify-center gap-6 px-6 py-16">
       <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <div className="flex items-center justify-between font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground">
           <span>
-            Topic {index + 1} of {hotspots.length}
+            topic {index + 1} / {hotspots.length}
           </span>
-          <span>{hotspot.topic}</span>
+          <span className="text-foreground">{hotspot.topic}</span>
         </div>
         <Progress value={((index + (phase === "feedback" ? 1 : 0)) / hotspots.length) * 100} />
       </div>
 
-      <Card>
+      <Card key={index} className="animate-in fade-in slide-in-from-bottom-1 duration-300 border-border">
         <CardHeader>
-          <Badge variant="secondary" className="w-fit">
+          <Badge variant="secondary" className="w-fit font-mono text-xs">
             axios / axios
           </Badge>
         </CardHeader>
@@ -120,37 +130,55 @@ export default function QuizPage() {
                 onChange={(e) => setGuess(e.target.value)}
                 rows={4}
               />
-              <Button onClick={handleSubmit} disabled={!guess.trim()}>
+              <Button onClick={handleSubmit} disabled={!guess.trim()} className="font-mono">
                 Submit guess
               </Button>
             </>
           )}
 
           {phase === "feedback" && (
-            <>
+            <div className="flex flex-col gap-4">
               <Separator />
-              <div className="flex items-center gap-2">
-                <Badge variant={lastCorrect ? "default" : "destructive"}>
-                  {lastCorrect ? "Correct" : "Not quite"}
+              <div className="animate-in fade-in zoom-in-95 duration-300 flex items-center gap-2">
+                <Badge
+                  className="font-mono text-xs"
+                  style={
+                    lastCorrect
+                      ? { backgroundColor: "var(--proof)", color: "var(--primary-foreground)" }
+                      : { backgroundColor: "var(--flag)", color: "var(--primary-foreground)" }
+                  }
+                >
+                  {lastCorrect ? "correct" : "not quite"}
                 </Badge>
-                <span className="text-sm font-medium">{hotspot.correctSummary}</span>
               </div>
-              <p className="text-sm leading-relaxed text-muted-foreground">
+              <p className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-100 fill-mode-both text-sm font-medium">
+                {hotspot.correctSummary}
+              </p>
+              <p className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-150 fill-mode-both text-sm leading-relaxed text-muted-foreground">
                 {hotspot.explanation}
               </p>
-              <div className="flex flex-col gap-2 rounded-md border p-3">
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-200 fill-mode-both flex flex-col gap-2 rounded-md border border-border bg-card p-3 font-mono">
+                <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
                   Proof, not opinion
                 </p>
-                {hotspot.citations.map((c) => (
-                  <div key={c.where} className="flex flex-col text-sm sm:flex-row sm:justify-between sm:gap-4">
+                {hotspot.citations.map((c, i) => (
+                  <div
+                    key={c.where}
+                    className="animate-in fade-in slide-in-from-left-2 duration-300 fill-mode-both flex flex-col gap-0.5 border-t border-border pt-2 text-xs first:border-t-0 first:pt-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+                    style={{ animationDelay: `${250 + i * 80}ms` }}
+                  >
                     <span className="text-muted-foreground">{c.what}</span>
-                    <code className="text-xs">{c.where}</code>
+                    <span style={{ color: "var(--proof)" }}>{c.where}</span>
                   </div>
                 ))}
               </div>
-              <Button onClick={handleNext}>{isLast ? "See summary" : "Next topic"}</Button>
-            </>
+              <Button
+                onClick={handleNext}
+                className="animate-in fade-in duration-300 delay-500 fill-mode-both font-mono"
+              >
+                {isLast ? "See summary" : "Next topic"}
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>
