@@ -215,7 +215,7 @@ export default function QuizPage() {
         <Progress value={((index + (phase !== "question" ? 1 : 0)) / hotspots.length) * 100} />
       </div>
 
-      <Card key={`${index}-${onFollowUp}`} className="animate-in fade-in slide-in-from-bottom-1 duration-300 border-border">
+      <Card key={`${index}-${onFollowUp}`} className="animate-in fade-in slide-in-from-bottom-1 duration-300 border-border shadow-[0_8px_30px_-12px_rgba(0,0,0,0.4)]">
         <CardHeader>
           <Badge variant="secondary" className="w-fit font-mono text-xs">
             axios / axios{onFollowUp ? " · follow-up" : ""}
