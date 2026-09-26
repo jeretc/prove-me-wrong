@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { hotspots } from "@/data/hotspots";
+import { hotspots, type Citation } from "@/data/hotspots";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+
+const AXIOS_COMMIT = "961241f6c19798eff16b0869486c125430a17961";
 
 type Phase = "question" | "feedback" | "followup-question" | "followup-feedback" | "summary";
 
@@ -25,6 +27,14 @@ function evaluateGuess(guess: string, indicators: string[]): boolean {
   });
 }
 
+function citationUrl(where: string): string {
+  const match = where.match(/^(.+):(\d+)(?:-(\d+))?$/);
+  if (!match) return `https://github.com/axios/axios/blob/${AXIOS_COMMIT}`;
+  const [, path, start, end] = match;
+  const hash = end ? `L${start}-L${end}` : `L${start}`;
+  return `https://github.com/axios/axios/blob/${AXIOS_COMMIT}/${path}#${hash}`;
+}
+
 function VerdictBadge({ correct }: { correct: boolean }) {
   return (
     <Badge
@@ -40,6 +50,31 @@ function VerdictBadge({ correct }: { correct: boolean }) {
   );
 }
 
+function CitationList({ citations }: { citations: Citation[] }) {
+  return (
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-200 fill-mode-both flex flex-col gap-2 rounded-md border border-border bg-card p-3 font-mono">
+      <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+        Proof, not opinion, click to view the real source
+      </p>
+      {citations.map((c, i) => (
+        <a
+          key={c.where}
+          href={citationUrl(c.where)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="animate-in fade-in slide-in-from-left-2 duration-300 fill-mode-both group flex flex-col gap-0.5 border-t border-border pt-2 text-xs first:border-t-0 first:pt-0 hover:opacity-80 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+          style={{ animationDelay: `${250 + i * 80}ms` }}
+        >
+          <span className="text-muted-foreground">{c.what}</span>
+          <span className="underline-offset-2 group-hover:underline" style={{ color: "var(--proof)" }}>
+            {c.where} ↗
+          </span>
+        </a>
+      ))}
+    </div>
+  );
+}
+
 export default function QuizPage() {
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>("question");
@@ -51,6 +86,7 @@ export default function QuizPage() {
 
   const hotspot = hotspots[index];
   const isLast = index === hotspots.length - 1;
+  const scoreSoFar = results.filter((r) => r.correct).length;
 
   function handleSubmit() {
     if (!guess.trim()) return;
@@ -80,6 +116,13 @@ export default function QuizPage() {
     setIndex((i) => i + 1);
     setGuess("");
     setPhase("question");
+  }
+
+  function submitShortcut(e: React.KeyboardEvent<HTMLTextAreaElement>, onSubmit: () => void) {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      onSubmit();
+    }
   }
 
   if (phase === "summary") {
@@ -162,7 +205,12 @@ export default function QuizPage() {
           <span>
             topic {index + 1} / {hotspots.length}
           </span>
-          <span className="text-foreground">{hotspot.topic}</span>
+          <span className="flex items-center gap-3">
+            {results.length > 0 && (
+              <span style={{ color: "var(--proof)" }}>{scoreSoFar} correct so far</span>
+            )}
+            <span className="text-foreground">{hotspot.topic}</span>
+          </span>
         </div>
         <Progress value={((index + (phase !== "question" ? 1 : 0)) / hotspots.length) * 100} />
       </div>
@@ -179,9 +227,10 @@ export default function QuizPage() {
           {phase === "question" && (
             <>
               <Textarea
-                placeholder="What do you think happens?"
+                placeholder="What do you think happens? (Ctrl/Cmd+Enter to submit)"
                 value={guess}
                 onChange={(e) => setGuess(e.target.value)}
+                onKeyDown={(e) => submitShortcut(e, handleSubmit)}
                 rows={4}
               />
               <Button onClick={handleSubmit} disabled={!guess.trim()} className="font-mono">
@@ -202,21 +251,7 @@ export default function QuizPage() {
               <p className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-150 fill-mode-both text-sm leading-relaxed text-muted-foreground">
                 {hotspot.explanation}
               </p>
-              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-200 fill-mode-both flex flex-col gap-2 rounded-md border border-border bg-card p-3 font-mono">
-                <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                  Proof, not opinion
-                </p>
-                {hotspot.citations.map((c, i) => (
-                  <div
-                    key={c.where}
-                    className="animate-in fade-in slide-in-from-left-2 duration-300 fill-mode-both flex flex-col gap-0.5 border-t border-border pt-2 text-xs first:border-t-0 first:pt-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
-                    style={{ animationDelay: `${250 + i * 80}ms` }}
-                  >
-                    <span className="text-muted-foreground">{c.what}</span>
-                    <span style={{ color: "var(--proof)" }}>{c.where}</span>
-                  </div>
-                ))}
-              </div>
+              <CitationList citations={hotspot.citations} />
               {lastCorrect ? (
                 <Button
                   onClick={goToNextTopic}
@@ -238,9 +273,10 @@ export default function QuizPage() {
           {phase === "followup-question" && (
             <>
               <Textarea
-                placeholder="What do you think happens?"
+                placeholder="What do you think happens? (Ctrl/Cmd+Enter to submit)"
                 value={followUpGuess}
                 onChange={(e) => setFollowUpGuess(e.target.value)}
+                onKeyDown={(e) => submitShortcut(e, handleFollowUpSubmit)}
                 rows={4}
               />
               <Button onClick={handleFollowUpSubmit} disabled={!followUpGuess.trim()} className="font-mono">
@@ -261,21 +297,7 @@ export default function QuizPage() {
               <p className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-150 fill-mode-both text-sm leading-relaxed text-muted-foreground">
                 {hotspot.followUp.explanation}
               </p>
-              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-200 fill-mode-both flex flex-col gap-2 rounded-md border border-border bg-card p-3 font-mono">
-                <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                  Proof, not opinion
-                </p>
-                {hotspot.followUp.citations.map((c, i) => (
-                  <div
-                    key={c.where}
-                    className="animate-in fade-in slide-in-from-left-2 duration-300 fill-mode-both flex flex-col gap-0.5 border-t border-border pt-2 text-xs first:border-t-0 first:pt-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
-                    style={{ animationDelay: `${250 + i * 80}ms` }}
-                  >
-                    <span className="text-muted-foreground">{c.what}</span>
-                    <span style={{ color: "var(--proof)" }}>{c.where}</span>
-                  </div>
-                ))}
-              </div>
+              <CitationList citations={hotspot.followUp.citations} />
               <Button
                 onClick={goToNextTopic}
                 className="animate-in fade-in duration-300 delay-500 fill-mode-both font-mono"
