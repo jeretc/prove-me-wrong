@@ -19,7 +19,10 @@ interface Result {
 
 function evaluateGuess(guess: string, indicators: string[]): boolean {
   const lower = guess.toLowerCase();
-  return indicators.some((i) => lower.includes(i));
+  return indicators.some((i) => {
+    const escaped = i.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp(`\\b${escaped}\\b`).test(lower);
+  });
 }
 
 function VerdictBadge({ correct }: { correct: boolean }) {
@@ -81,6 +84,12 @@ export default function QuizPage() {
 
   if (phase === "summary") {
     const correctCount = results.filter((r) => r.correct).length;
+    const understood = results.filter((r) => r.correct).map((r) => r.topic);
+    const revisit = results
+      .filter((r) => !r.correct)
+      .map((r) => hotspots.find((h) => h.topic === r.topic))
+      .filter((h): h is (typeof hotspots)[number] => !!h);
+
     return (
       <div className="mx-auto flex min-h-screen max-w-xl flex-col justify-center gap-6 px-6 py-16">
         <div className="text-center">
@@ -91,29 +100,42 @@ export default function QuizPage() {
             {correctCount} of {hotspots.length} proven right
           </h1>
         </div>
+
         <Card>
-          <CardContent className="flex flex-col gap-3 pt-6">
-            {results.map((r) => (
-              <div key={r.topic} className="flex items-center justify-between gap-4">
-                <span className="text-sm">{r.topic}</span>
-                <Badge
-                  className="font-mono text-xs"
-                  style={
-                    r.correct
-                      ? { backgroundColor: "var(--proof)", color: "var(--primary-foreground)" }
-                      : { backgroundColor: "var(--flag)", color: "var(--primary-foreground)" }
-                  }
-                >
-                  {r.correct ? "understood" : "revisit"}
-                </Badge>
+          <CardContent className="flex flex-col gap-4 pt-6 text-sm leading-relaxed">
+            {understood.length > 0 && (
+              <p>
+                You showed solid understanding of{" "}
+                <span className="text-foreground">{understood.join(", ")}</span>
+                {understood.length === hotspots.length
+                  ? ", the full request lifecycle."
+                  : "."}
+              </p>
+            )}
+            {revisit.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <p className="font-medium text-foreground">
+                  {revisit.length} area{revisit.length > 1 ? "s" : ""} worth revisiting:
+                </p>
+                <ul className="flex flex-col gap-2">
+                  {revisit.map((h) => (
+                    <li key={h.id} className="border-l-2 border-border pl-3">
+                      <span className="font-mono text-xs" style={{ color: "var(--flag)" }}>
+                        {h.topic}
+                      </span>
+                      <p className="text-muted-foreground">{h.correctSummary}</p>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            ))}
+            )}
+            <p className="font-mono text-xs text-muted-foreground">
+              {correctCount === hotspots.length
+                ? "Perfect score, you have a complete mental model of this repo."
+                : `You got ${correctCount} out of ${hotspots.length}. Nail these and you'll have a complete mental model of the axios request lifecycle.`}
+            </p>
           </CardContent>
         </Card>
-        <p className="text-center text-sm text-muted-foreground">
-          Revisit the flagged topics above, each correction pointed to the exact file and
-          line in the real axios source.
-        </p>
         <Button
           variant="outline"
           className="font-mono"
