@@ -47,3 +47,6 @@ next-env.d.ts
 ibm-credentials.env
 *credentials*.json
 *.token
+
+.vercel
+.env*
