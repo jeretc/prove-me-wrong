@@ -15,3 +15,4 @@ axios-ref/
 ibm-credentials.env
 *credentials*.json
 *.token
+presentation/~$*
