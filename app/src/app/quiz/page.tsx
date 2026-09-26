@@ -201,7 +201,7 @@ export default function QuizPage() {
   return (
     <div className="mx-auto flex min-h-screen max-w-xl flex-col justify-center gap-6 px-6 py-16">
       <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground">
           <span>
             topic {index + 1} / {hotspots.length}
           </span>
@@ -209,7 +209,7 @@ export default function QuizPage() {
             {results.length > 0 && (
               <span style={{ color: "var(--proof)" }}>{scoreSoFar} correct so far</span>
             )}
-            <span className="text-foreground">{hotspot.topic}</span>
+            <span className="hidden text-foreground sm:inline">{hotspot.topic}</span>
           </span>
         </div>
         <Progress value={((index + (phase !== "question" ? 1 : 0)) / hotspots.length) * 100} />
