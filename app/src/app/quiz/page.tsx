@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 
-type Phase = "question" | "feedback" | "summary";
+type Phase = "question" | "feedback" | "followup-question" | "followup-feedback" | "summary";
 
 interface Result {
   topic: string;
@@ -22,12 +22,29 @@ function evaluateGuess(guess: string, indicators: string[]): boolean {
   return indicators.some((i) => lower.includes(i));
 }
 
+function VerdictBadge({ correct }: { correct: boolean }) {
+  return (
+    <Badge
+      className="font-mono text-xs"
+      style={
+        correct
+          ? { backgroundColor: "var(--proof)", color: "var(--primary-foreground)" }
+          : { backgroundColor: "var(--flag)", color: "var(--primary-foreground)" }
+      }
+    >
+      {correct ? "correct" : "not quite"}
+    </Badge>
+  );
+}
+
 export default function QuizPage() {
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>("question");
   const [guess, setGuess] = useState("");
+  const [followUpGuess, setFollowUpGuess] = useState("");
   const [results, setResults] = useState<Result[]>([]);
   const [lastCorrect, setLastCorrect] = useState(false);
+  const [lastFollowUpCorrect, setLastFollowUpCorrect] = useState(false);
 
   const hotspot = hotspots[index];
   const isLast = index === hotspots.length - 1;
@@ -40,7 +57,19 @@ export default function QuizPage() {
     setPhase("feedback");
   }
 
-  function handleNext() {
+  function handleTryFollowUp() {
+    setFollowUpGuess("");
+    setPhase("followup-question");
+  }
+
+  function handleFollowUpSubmit() {
+    if (!followUpGuess.trim()) return;
+    const correct = evaluateGuess(followUpGuess, hotspot.followUp.correctIndicators);
+    setLastFollowUpCorrect(correct);
+    setPhase("followup-feedback");
+  }
+
+  function goToNextTopic() {
     if (isLast) {
       setPhase("summary");
       return;
@@ -101,6 +130,9 @@ export default function QuizPage() {
     );
   }
 
+  const onFollowUp = phase === "followup-question" || phase === "followup-feedback";
+  const activeQuestion = onFollowUp ? hotspot.followUp.question : hotspot.question;
+
   return (
     <div className="mx-auto flex min-h-screen max-w-xl flex-col justify-center gap-6 px-6 py-16">
       <div className="flex flex-col gap-2">
@@ -110,17 +142,17 @@ export default function QuizPage() {
           </span>
           <span className="text-foreground">{hotspot.topic}</span>
         </div>
-        <Progress value={((index + (phase === "feedback" ? 1 : 0)) / hotspots.length) * 100} />
+        <Progress value={((index + (phase !== "question" ? 1 : 0)) / hotspots.length) * 100} />
       </div>
 
-      <Card key={index} className="animate-in fade-in slide-in-from-bottom-1 duration-300 border-border">
+      <Card key={`${index}-${onFollowUp}`} className="animate-in fade-in slide-in-from-bottom-1 duration-300 border-border">
         <CardHeader>
           <Badge variant="secondary" className="w-fit font-mono text-xs">
-            axios / axios
+            axios / axios{onFollowUp ? " · follow-up" : ""}
           </Badge>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <p className="text-lg leading-relaxed">{hotspot.question}</p>
+          <p className="text-lg leading-relaxed">{activeQuestion}</p>
 
           {phase === "question" && (
             <>
@@ -140,16 +172,7 @@ export default function QuizPage() {
             <div className="flex flex-col gap-4">
               <Separator />
               <div className="animate-in fade-in zoom-in-95 duration-300 flex items-center gap-2">
-                <Badge
-                  className="font-mono text-xs"
-                  style={
-                    lastCorrect
-                      ? { backgroundColor: "var(--proof)", color: "var(--primary-foreground)" }
-                      : { backgroundColor: "var(--flag)", color: "var(--primary-foreground)" }
-                  }
-                >
-                  {lastCorrect ? "correct" : "not quite"}
-                </Badge>
+                <VerdictBadge correct={lastCorrect} />
               </div>
               <p className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-100 fill-mode-both text-sm font-medium">
                 {hotspot.correctSummary}
@@ -172,8 +195,67 @@ export default function QuizPage() {
                   </div>
                 ))}
               </div>
+              {lastCorrect ? (
+                <Button
+                  onClick={goToNextTopic}
+                  className="animate-in fade-in duration-300 delay-500 fill-mode-both font-mono"
+                >
+                  {isLast ? "See summary" : "Next topic"}
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleTryFollowUp}
+                  className="animate-in fade-in duration-300 delay-500 fill-mode-both font-mono"
+                >
+                  Try an easier follow-up
+                </Button>
+              )}
+            </div>
+          )}
+
+          {phase === "followup-question" && (
+            <>
+              <Textarea
+                placeholder="What do you think happens?"
+                value={followUpGuess}
+                onChange={(e) => setFollowUpGuess(e.target.value)}
+                rows={4}
+              />
+              <Button onClick={handleFollowUpSubmit} disabled={!followUpGuess.trim()} className="font-mono">
+                Submit guess
+              </Button>
+            </>
+          )}
+
+          {phase === "followup-feedback" && (
+            <div className="flex flex-col gap-4">
+              <Separator />
+              <div className="animate-in fade-in zoom-in-95 duration-300 flex items-center gap-2">
+                <VerdictBadge correct={lastFollowUpCorrect} />
+              </div>
+              <p className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-100 fill-mode-both text-sm font-medium">
+                {hotspot.followUp.correctSummary}
+              </p>
+              <p className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-150 fill-mode-both text-sm leading-relaxed text-muted-foreground">
+                {hotspot.followUp.explanation}
+              </p>
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 delay-200 fill-mode-both flex flex-col gap-2 rounded-md border border-border bg-card p-3 font-mono">
+                <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                  Proof, not opinion
+                </p>
+                {hotspot.followUp.citations.map((c, i) => (
+                  <div
+                    key={c.where}
+                    className="animate-in fade-in slide-in-from-left-2 duration-300 fill-mode-both flex flex-col gap-0.5 border-t border-border pt-2 text-xs first:border-t-0 first:pt-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+                    style={{ animationDelay: `${250 + i * 80}ms` }}
+                  >
+                    <span className="text-muted-foreground">{c.what}</span>
+                    <span style={{ color: "var(--proof)" }}>{c.where}</span>
+                  </div>
+                ))}
+              </div>
               <Button
-                onClick={handleNext}
+                onClick={goToNextTopic}
                 className="animate-in fade-in duration-300 delay-500 fill-mode-both font-mono"
               >
                 {isLast ? "See summary" : "Next topic"}

@@ -3,6 +3,14 @@ export interface Citation {
   where: string;
 }
 
+export interface FollowUp {
+  question: string;
+  correctSummary: string;
+  explanation: string;
+  citations: Citation[];
+  correctIndicators: string[];
+}
+
 export interface Hotspot {
   id: string;
   topic: string;
@@ -14,6 +22,8 @@ export interface Hotspot {
   correctIndicators: string[];
   /** shown only when the user gets it wrong, to nudge them before revealing the answer */
   hint: string;
+  /** a gentler question on the same topic, shown only after a wrong guess on the main question */
+  followUp: FollowUp;
 }
 
 export const hotspots: Hotspot[] = [
@@ -33,6 +43,18 @@ export const hotspots: Hotspot[] = [
     ],
     correctIndicators: ["per-request", "per request", "request config", "request wins", "request value", "the new one", "latest", "override"],
     hint: "Think about which config is applied last, closest to the actual network call.",
+    followUp: {
+      question:
+        "mergeConfig(config1, config2) is called with instance defaults as config1 and the per-request config as config2. For a simple property like timeout, which value wins when both are defined?",
+      correctSummary: "The per-request value (config2) always wins.",
+      explanation:
+        "timeout uses the defaultToConfig2 strategy, which returns config2's value whenever it is not undefined, and only falls back to config1's value if config2 doesn't have one.",
+      citations: [
+        { what: "timeout mapped to defaultToConfig2", where: "lib/core/mergeConfig.js:126" },
+        { what: "defaultToConfig2 returns config2 first, falls back to config1", where: "lib/core/mergeConfig.js:75-81" },
+      ],
+      correctIndicators: ["per-request", "config2", "request wins", "request value", "the request"],
+    },
   },
   {
     id: "interceptor-order",
@@ -48,6 +70,18 @@ export const hotspots: Hotspot[] = [
     ],
     correctIndicators: ["a, b, c", "a then b then c", "registration order", "same order", "a first", "a runs first", "order they were added", "order added"],
     hint: "Don't trust the function name unshiftRequestInterceptors, read what it actually does to the array.",
+    followUp: {
+      question:
+        "You register two request interceptors back to back: axios.interceptors.request.use(A) then axios.interceptors.request.use(B). Which handler runs first when a request is made, A or B?",
+      correctSummary: "A runs first, registration order is preserved.",
+      explanation:
+        "Request interceptors are pushed into requestInterceptorChain in registration order, giving [A, B]. That whole array is then prepended onto the dispatch chain as a block via chain.unshift(...requestInterceptorChain). Spreading an array into unshift preserves its internal order, it does not reverse it, so the final chain is [A, B, dispatch], executed left to right.",
+      citations: [
+        { what: "Request interceptors pushed in registration order", where: "lib/core/Axios.js:181" },
+        { what: "Whole block prepended via unshift(...), order preserved not reversed", where: "lib/core/Axios.js:196" },
+      ],
+      correctIndicators: ["a runs first", "a first", "a, then b", "registration order", "same order", "a fires first"],
+    },
   },
   {
     id: "redirect-credentials",
@@ -63,6 +97,17 @@ export const hotspots: Hotspot[] = [
     ],
     correctIndicators: ["dropped", "stripped", "removed", "not sent", "doesn't survive", "does not survive", "lost", "cleared"],
     hint: "Think about why a redirect to an attacker-controlled domain would be a security risk if credentials just followed along.",
+    followUp: {
+      question:
+        "When axios follows a redirect and the destination URL has the same origin as the original request (same protocol, host, and port), what happens to the Authorization / HTTP Basic credentials?",
+      correctSummary: "They are preserved and re-attached.",
+      explanation:
+        "Axios intentionally restores the credentials for same-origin redirects. Only a change in origin causes them to be stripped.",
+      citations: [
+        { what: "beforeRedirectAuth restores credentials only when origins match", where: "lib/adapters/http.js:1071-1075" },
+      ],
+      correctIndicators: ["preserved", "kept", "restored", "re-attached", "reattached", "survives", "same origin"],
+    },
   },
   {
     id: "cancellation",
@@ -79,6 +124,18 @@ export const hotspots: Hotspot[] = [
     ],
     correctIndicators: ["catch", "only catch", "rejects", "rejected", "error path", "jump to catch", "jumps to catch"],
     hint: "Is cancelling a request more like a success or a failure, from the promise's point of view?",
+    followUp: {
+      question:
+        "When a request is cancelled in axios, what function should you call on the caught error to reliably distinguish a cancellation from any other kind of failure?",
+      correctSummary: "axios.isCancel(error), it checks for a truthy __CANCEL__ property.",
+      explanation:
+        "isCancel returns true only when the error has a truthy __CANCEL__ property, which is the flag set exclusively by CanceledError. Any other AxiosError, network failure, timeout, bad status, does not carry __CANCEL__, so isCancel returns false for them.",
+      citations: [
+        { what: "isCancel checks for a truthy __CANCEL__ property", where: "lib/cancel/isCancel.js:3-5" },
+        { what: "CanceledError sets this.__CANCEL__ = true", where: "lib/cancel/CanceledError.js:18" },
+      ],
+      correctIndicators: ["iscancel", "__cancel__", "axios.iscancel"],
+    },
   },
   {
     id: "xsrf",
@@ -93,6 +150,17 @@ export const hotspots: Hotspot[] = [
     ],
     correctIndicators: ["no", "not attached", "won't", "will not", "doesn't attach", "does not attach", "not sent", "withcredentials doesn't matter", "withcredentials has nothing"],
     hint: "withCredentials controls cookies on the request/response, it's a separate setting from the XSRF-specific opt-in.",
+    followUp: {
+      question:
+        "When a browser makes a same-origin request with the default axios config (withXSRFToken not set), does axios automatically attach the XSRF token header?",
+      correctSummary: "Yes, same-origin requests get it automatically by default.",
+      explanation:
+        "When withXSRFToken is null or undefined (the default), axios falls back to isURLSameOrigin(url). For same-origin URLs that check returns true, so the XSRF cookie is read and the header is attached automatically, no extra config needed.",
+      citations: [
+        { what: "shouldSendXSRF reduces to isURLSameOrigin(url) when withXSRFToken is unset", where: "lib/helpers/resolveConfig.js:92-93" },
+      ],
+      correctIndicators: ["yes", "attached", "attaches", "auto-attach", "automatically"],
+    },
   },
   {
     id: "max-length",
@@ -108,6 +176,18 @@ export const hotspots: Hotspot[] = [
     ],
     correctIndicators: ["reject", "throw", "error", "fails", "fail", "rejects the promise"],
     hint: "Would silently truncating a response ever be a safe default for a JSON API?",
+    followUp: {
+      question:
+        "When maxContentLength is not set in your axios config, what is its default value, and does axios enforce any size limit on the response body?",
+      correctSummary: "The default is -1, meaning no limit is enforced.",
+      explanation:
+        "Axios only checks the response size when maxContentLength > -1. With the default of -1, the guard is skipped entirely and responses of any size are accepted.",
+      citations: [
+        { what: "Default maxContentLength and maxBodyLength are both -1", where: "lib/defaults/index.js:154-155" },
+        { what: "Size guard skipped entirely when not greater than -1", where: "lib/adapters/http.js:729" },
+      ],
+      correctIndicators: ["-1", "no limit", "unlimited", "not enforced", "no enforcement"],
+    },
   },
   {
     id: "transform-pipeline",
@@ -124,6 +204,19 @@ export const hotspots: Hotspot[] = [
     ],
     correctIndicators: ["replace", "replaces", "overwrite", "overwrites", "gone", "no longer run", "doesn't run", "does not run", "instead of"],
     hint: "Is this a merge, or a plain override? Check how the config-merge logic treats function/array values versus objects.",
+    followUp: {
+      question:
+        "A developer wants to add a custom step that uppercases a string body after normal JSON serialization, but the request body arrives as [object Object]. What is the minimal fix, and why does it work?",
+      correctSummary: "Concatenate the default transforms with your custom function, don't just replace them.",
+      explanation:
+        "Pass axios.defaults.transformRequest.concat(yourFunction) so the default JSON serializer still runs first before your custom step. A plain function or a new array without the defaults completely replaces the pipeline, which is why the object fell through unserialized.",
+      citations: [
+        { what: "Default transformRequest is an array containing the JSON serializer", where: "lib/defaults/index.js:44-45" },
+        { what: "Merge strategy replaces outright, no merging", where: "lib/core/mergeConfig.js:123" },
+        { what: "Canonical .concat() pattern in axios's own test suite", where: "tests/browser/transform.browser.test.js:196" },
+      ],
+      correctIndicators: ["concat", "defaults.transformrequest", "spread", "combine with default", "keep the default"],
+    },
   },
   {
     id: "proxy-tunneling",
@@ -140,5 +233,17 @@ export const hotspots: Hotspot[] = [
     ],
     correctIndicators: ["different", "no", "not the same", "tunnel", "connect", "differently"],
     hint: "Think about what a proxy can actually see in each case, the whole point of HTTPS is that the payload is hidden.",
+    followUp: {
+      question:
+        "When your axios Node.js app makes a request to an https:// target through a proxy, what can an eavesdropper sitting on the proxy server actually read, compared to a request to an http:// target through the same proxy?",
+      correctSummary: "For HTTPS only the host and port are visible, for HTTP everything is visible.",
+      explanation:
+        "For an HTTP target the proxy sees the full absolute URL, all headers, and the full body in plain text. For an HTTPS target the proxy only sees a CONNECT request naming the host and port, then forwards an opaque TLS-encrypted stream. The URL path, headers, and body stay hidden inside the end-to-end TLS tunnel.",
+      citations: [
+        { what: "CONNECT-tunneling path preserves end-to-end TLS, proxy can't inspect URL/headers/body", where: "lib/adapters/http.js:335-341" },
+        { what: "Forward-proxy mode, proxy sees everything for plaintext HTTP", where: "lib/adapters/http.js:389" },
+      ],
+      correctIndicators: ["host and port", "host:port", "only the host", "hidden", "cannot see", "can't see", "everything visible", "sees everything"],
+    },
   },
 ];
